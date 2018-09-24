@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.model_selection import cross_val_score
 
 # Importing the dataset
@@ -37,10 +38,7 @@ for dataset in df_data:
     dataset['Fare'] = dataset['Fare'].fillna(dataset['Fare'].median())
     age_avg = dataset['Age'].mean()
     age_std = dataset['Age'].std()
-    age_null_count = dataset['Age'].isnull().sum()
-    age_null_random_list = np.random.randint(age_avg - age_std, age_avg + age_std, size=age_null_count)
-    dataset['Age'][np.isnan(dataset['Age'])] = age_null_random_list
-    dataset['Age'] = dataset['Age'].astype(int)
+    dataset['Age'] = dataset['Age'].fillna(np.random.randint(age_avg - age_std, age_avg + age_std))
 
 # Categorising and encoding Age
 for dataset in df_data:    
@@ -100,16 +98,23 @@ X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
 # Fitting Random Forest Classifier
-classifier = RandomForestClassifier()
-classifier.fit(X_train, y_train)
+rf = RandomForestClassifier()
+rf.fit(X_train, y_train)
+xgb = XGBClassifier()
+xgb.fit(X_train, y_train)
 
 # Applying k-Fold Cross Validation
-accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10)
-mean = accuracies.mean()
-std = accuracies.std()
+mean = []
+std = []
+acc_rf = cross_val_score(estimator = rf, X = X_train, y = y_train, cv = 10)
+mean.append(acc_rf.mean())
+std.append(acc_rf.std())
+acc_xgb = cross_val_score(estimator = xgb, X = X_train, y = y_train, cv = 10)
+mean.append(acc_xgb.mean())
+std.append(acc_xgb.std())
 
 # Predicting the Test set results
-y_pred = classifier.predict(X_test)
+y_pred = xgb.predict(X_test)
 
 # Generate Submission File
 submission = pd.DataFrame({'PassengerId': PID, 'Survived': y_pred})
