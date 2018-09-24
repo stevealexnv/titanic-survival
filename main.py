@@ -2,6 +2,11 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.model_selection import cross_val_score
@@ -97,21 +102,46 @@ sc = StandardScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
-# Fitting Random Forest Classifier
+# Fitting different classifiers
+log = LogisticRegression()
+log.fit(X_train, y_train)
+knn = KNeighborsClassifier()
+knn.fit(X_train, y_train)
+svm = SVC()
+svm.fit(X_train, y_train)
+nb = GaussianNB()
+nb.fit(X_train, y_train)
+dt = DecisionTreeClassifier()
+dt.fit(X_train, y_train)
 rf = RandomForestClassifier()
 rf.fit(X_train, y_train)
 xgb = XGBClassifier()
 xgb.fit(X_train, y_train)
 
-# Applying k-Fold Cross Validation
-mean = []
-std = []
-acc_rf = cross_val_score(estimator = rf, X = X_train, y = y_train, cv = 10)
-mean.append(acc_rf.mean())
-std.append(acc_rf.std())
-acc_xgb = cross_val_score(estimator = xgb, X = X_train, y = y_train, cv = 10)
-mean.append(acc_xgb.mean())
-std.append(acc_xgb.std())
+# Applying k-Fold Cross Validation to all classifiers
+acc_mean = []
+acc_std = []
+score_log = cross_val_score(estimator = log, X = X_train, y = y_train, cv = 10)
+acc_mean.append(score_log.mean())
+acc_std.append(score_log.std())
+score_knn = cross_val_score(estimator = knn, X = X_train, y = y_train, cv = 10)
+acc_mean.append(score_knn.mean())
+acc_std.append(score_knn.std())
+score_svm = cross_val_score(estimator = svm, X = X_train, y = y_train, cv = 10)
+acc_mean.append(score_svm.mean())
+acc_std.append(score_svm.std())
+score_nb = cross_val_score(estimator = nb, X = X_train, y = y_train, cv = 10)
+acc_mean.append(score_nb.mean())
+acc_std.append(score_nb.std())
+score_dt = cross_val_score(estimator = dt, X = X_train, y = y_train, cv = 10)
+acc_mean.append(score_dt.mean())
+acc_std.append(score_dt.std())
+score_rf = cross_val_score(estimator = rf, X = X_train, y = y_train, cv = 10)
+acc_mean.append(score_rf.mean())
+acc_std.append(score_rf.std())
+score_xgb = cross_val_score(estimator = xgb, X = X_train, y = y_train, cv = 10)
+acc_mean.append(score_xgb.mean())
+acc_std.append(score_xgb.std())
 
 # Predicting the Test set results
 y_pred = xgb.predict(X_test)
