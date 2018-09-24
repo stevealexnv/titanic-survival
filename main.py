@@ -119,6 +119,15 @@ xgb = XGBClassifier()
 xgb.fit(X_train, y_train)
 
 # Applying k-Fold Cross Validation to all classifiers
+col = ['Classifier', 'Mean', 'Standard Deviation']
+accuracy = pd.DataFrame(index = range(0,7), columns = col)
+accuracy['Classifier'] = ['Logistic Regression',
+                        'K-NN',
+                        'SVM',
+                        'Naive Bayes',
+                        'Decision Tree',
+                        'Random Forest',
+                        'XGBoost']
 acc_mean = []
 acc_std = []
 score_log = cross_val_score(estimator = log, X = X_train, y = y_train, cv = 10)
@@ -142,6 +151,9 @@ acc_std.append(score_rf.std())
 score_xgb = cross_val_score(estimator = xgb, X = X_train, y = y_train, cv = 10)
 acc_mean.append(score_xgb.mean())
 acc_std.append(score_xgb.std())
+accuracy['Mean'] = acc_mean
+accuracy['Standard Deviation'] = acc_std
+print(accuracy)
 
 # Predicting the Test set results
 y_pred = xgb.predict(X_test)
