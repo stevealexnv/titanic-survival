@@ -98,7 +98,7 @@ X_train = df_train.iloc[:, 1:].values
 X_test = df_test.values
 y_train = df_train.iloc[:, 0].values
 
-# Using One Hot Encoder to remove ordering of classes
+# Using One Hot Encoder to remove ordering of classes in Embarked and Title
 onehotencoder = OneHotEncoder(categorical_features = [4, 8])
 X_train = onehotencoder.fit_transform(X_train).toarray()
 X_test = onehotencoder.fit_transform(X_test).toarray()
