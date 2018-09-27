@@ -1,6 +1,7 @@
 # Importing the libraries
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -96,6 +97,15 @@ df_test = df_test.drop(drop_elements, axis = 1)
 X_train = df_train.iloc[:, 1:].values
 X_test = df_test.values
 y_train = df_train.iloc[:, 0].values
+
+# Using One Hot Encoder to remove ordering of classes
+onehotencoder = OneHotEncoder(categorical_features = [4, 8])
+X_train = onehotencoder.fit_transform(X_train).toarray()
+X_test = onehotencoder.fit_transform(X_test).toarray()
+
+# Avoiding dummy variable trap
+X_train = np.delete(X_train, [0, 3], 1)
+X_test = np.delete(X_test, [0, 3], 1)
 
 # Feature Scaling
 sc = StandardScaler()
